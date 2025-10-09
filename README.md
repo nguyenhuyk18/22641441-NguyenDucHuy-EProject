@@ -108,12 +108,5 @@ Hệ thống đã được thiết lập thành công:
 
 ---
 
-### 💡 Gợi ý mở rộng
-- Thêm Redis cache để tối ưu hiệu năng  
-- Triển khai Prometheus + Grafana để giám sát  
-- Dùng Docker Compose để khởi chạy toàn bộ stack nhanh hơn  
-
----
-
 🧑‍💻 **Tác giả:** NGUYỄN ĐỨC HUY 
 📅 **Cập nhật lần cuối:** 2025-10-09
