@@ -1,26 +1,119 @@
-SET UP RABBITMQ TRÊN DOCKER
-![code in project](public/1.png)  
+# 🐇 Case Study: Microservices với RabbitMQ, API Gateway & JWT
 
-CHỈNH LẠI ĐƯỜNG DẪN CHO API GATEWAY ĐỂ ĐIỀU HƯỚNG ĐÚNG
-![code in project](public/2_chinh_duong_dan.png)
+Dự án minh họa cách xây dựng hệ thống **Microservices** trong Node.js, sử dụng:
+- 🐳 **Docker** để container hóa  
+- 🐇 **RabbitMQ** để giao tiếp giữa các service  
+- 🔐 **JWT** để xác thực người dùng  
+- 🚪 **API Gateway** để định tuyến yêu cầu  
 
-THÊM THÔNG TIN ĐĂNG NHẬP ĐỂ KÝ TẠO MÃ JWT
-![code in project](public/3.png)
+---
 
-THÊM CÁC ĐOẠN CODE PHỤC VỤ CHO CASESTUDY
-![code in project](public/4_them_cac_code_phuc_vu_cho_case_study.png)
+## ⚙️ 1. Cài đặt RabbitMQ trên Docker
 
-TEST API ĐĂNG KÝ TÀI KHOẢN
-![code in project](public/5_register_post_man.png)
+Sử dụng lệnh này để khởi chạy RabbitMQ:
 
-TEST API ĐĂNG NHẬP TÀI KHOẢN
-![code in project](public/6_login_post_man.png)
+```bash
+docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management
+```
 
-TEST API THÊM SẢN PHẨM
-![code in project](public/7_add_product.png)
+> 🖥️ Giao diện quản lý: [http://localhost:15672](http://localhost:15672)  
+> 👤 Tài khoản mặc định: `guest` / `guest`
 
-TEST API XEM TOÀN BỘ SẢN PHẨM
-![code in project](public/8_get_more_product.png)
+📸 *Ảnh minh họa:*  
+![RabbitMQ Setup](public/1.png)
 
-TEST API THÊM ĐƠN HÀNG
-![code in project](public/9_create_order.png)
+---
+
+## 🌐 2. Cấu hình lại API Gateway
+
+Cập nhật đường dẫn định tuyến để API Gateway điều hướng đúng đến các service (User, Product, Order,...)
+
+📸 *Ảnh minh họa:*  
+![Chỉnh đường dẫn Gateway](public/2_chinh_duong_dan.png)
+
+---
+
+## 🔑 3. Thêm thông tin đăng nhập & ký JWT
+
+Cập nhật phần logic đăng nhập để tạo **token JWT** giúp xác thực người dùng.
+
+📸 *Ảnh minh họa:*  
+![Thêm JWT Sign](public/3.png)
+
+---
+
+## 🧩 4. Bổ sung các đoạn code phục vụ cho Case Study
+
+Thêm các chức năng hỗ trợ liên quan đến microservices, giao tiếp RabbitMQ, v.v.
+
+📸 *Ảnh minh họa:*  
+![Thêm Code Case Study](public/4_them_cac_code_phuc_vu_cho_case_study.png)
+
+---
+
+## 🧪 5. Kiểm thử API với Postman
+
+### 🧍‍♂️ Đăng ký tài khoản
+- **Method:** `POST`
+- **Endpoint:** `/api/auth/register`
+
+📸  
+![Test Register API](public/5_register_post_man.png)
+
+---
+
+### 🔐 Đăng nhập tài khoản
+- **Method:** `POST`
+- **Endpoint:** `/api/auth/login`
+
+📸  
+![Test Login API](public/6_login_post_man.png)
+
+---
+
+### 🛒 Thêm sản phẩm
+- **Method:** `POST`
+- **Endpoint:** `/api/products`
+
+📸  
+![Test Add Product](public/7_add_product.png)
+
+---
+
+### 📦 Xem danh sách sản phẩm
+- **Method:** `GET`
+- **Endpoint:** `/api/products`
+
+📸  
+![Get All Products](public/8_get_more_product.png)
+
+---
+
+### 🧾 Tạo đơn hàng
+- **Method:** `POST`
+- **Endpoint:** `/api/orders`
+
+📸  
+![Create Order](public/9_create_order.png)
+
+---
+
+## 🚀 6. Kết luận
+
+Hệ thống đã được thiết lập thành công:
+- RabbitMQ hoạt động để giao tiếp giữa các service  
+- JWT đảm bảo xác thực người dùng  
+- API Gateway định tuyến chính xác  
+- Tất cả API hoạt động ổn định qua Postman ✅
+
+---
+
+### 💡 Gợi ý mở rộng
+- Thêm Redis cache để tối ưu hiệu năng  
+- Triển khai Prometheus + Grafana để giám sát  
+- Dùng Docker Compose để khởi chạy toàn bộ stack nhanh hơn  
+
+---
+
+🧑‍💻 **Tác giả:** _Tên của bạn_  
+📅 **Cập nhật lần cuối:** 2025-10-09
