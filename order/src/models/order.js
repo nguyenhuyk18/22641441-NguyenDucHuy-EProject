@@ -6,23 +6,27 @@ const orderSchema = new mongoose.Schema({
     ref: 'products',
     required: true,
   }],
+  username: {
+    type: String,
+    required: true,
+  },
+  quantity: {
+    type: Array,
+  },
   totalPrice: {
     type: Number,
     required: true,
     min: 0,
   },
-  username: {
+  status: {
     type: String,
-    required: true
+    enum: ['ordered', 'delivered', 'cancled'], // chỉ cho phép 2 giá trị này
+    default: 'ordered', // giá trị mặc định khi tạo order mới
   },
   createdAt: {
     type: Date,
     default: Date.now,
-  }
-  // status: {
-  //   type: String,
-  //   required: true
-  // }
+  },
 }, { collection: 'orders' });
 
 const Order = mongoose.model('Order', orderSchema);

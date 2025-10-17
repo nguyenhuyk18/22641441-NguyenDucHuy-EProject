@@ -6,22 +6,23 @@ const app = express();
 
 // Route requests to the auth service
 app.use("/auth", (req, res) => {
-  req.url = req.url.replace(/^\/auth\//, '');
-  // console.log(req.url)
-  proxy.web(req, res, { target: "http://127.0.0.1:3000" });
+  req.url = "/auth" + req.url;
+  proxy.web(req, res, { target: "http://huy_auth_service:3000" });
 });
 
 // Route requests to the product service
 app.use("/products", (req, res) => {
-  req.url = req.url.replace(/^\/products\//, '');
-  proxy.web(req, res, { target: "http://127.0.0.1:3001" });
+  req.url = "/products" + req.url;
+  proxy.web(req, res, { target: "http://huy_product_service:3001" });
 });
-
+// console.log('sdsdds')
 // Route requests to the order service
 app.use("/orders", (req, res) => {
-  req.url = req.url.replace(/^\/orders\//, '');
-  proxy.web(req, res, { target: "http://127.0.0.1:3002" });
+  req.url = "/orders" + req.url;
+  proxy.web(req, res, { target: "http://huy_order_service:3002" });
 });
+
+// app.use()
 
 // Start the server
 const port = process.env.PORT || 3003;

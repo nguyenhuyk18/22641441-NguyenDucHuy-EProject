@@ -1,53 +1,86 @@
-const Order = require("../models/order");
-const OrdersRepository = require("../repositories/orderRepository");
-// const dayjs = require('dayjs')
-/**
- * Class that ties together the business logic and the data access layer
- */
-class OrdersService {
+const Order = require('../models/order');
+const OrderRepository = require('../repositories/orderRepository');
+const amqp = require("amqplib");
+
+
+
+class OrderService {
     constructor() {
-        this.ordersRepository = new OrdersRepository();
+        this.orderRepository = new OrderRepository();
+        this.check;
+        this.dataGet;
+        this.getOrder = this.getOrder.bind(this);
     }
 
-    async createOrder(order) {
+    async getOrder() {
+        const rs = await this.orderRepository.getAllOrder();
+        const connection = await amqp.connect('amqp://guest:guest@huy_rabbitmq:5672');
+        const channel = await connection.createChannel();
+        this.check = false;
+        this.dataGet = null;
 
-        const countOrders = await this.checkOrderLimit(order.username);
+        const rs1 = await Promise.all(rs.map(async (row) => {
 
-        console.log(countOrders)
+            channel.assertQueue('get-info-product-back');
+            if (row.totalPrice > 1200000) {
+                const productsId = row.products;
 
-        if (countOrders > 5) return null;
+                await channel.sendToQueue(
+                    'get-info-products',
+                    Buffer.from(JSON.stringify({ ids: productsId }))
+                )
 
-        const createdOrder = await this.ordersRepository.create(order);
+                // console.log('sdsd1')
+                channel.consume('get-info-product-back', (msg) => {
+                    const data = JSON.parse(msg.content);
+                    this.check = true;
+                    console.log(data)
+                    this.dataGet = data;
+                    channel.ack(msg)
+                })
 
-        return createdOrder;
+                while (this.check == false) {
+                    // console.log('huhu đợi xíu')
+                    await new Promise(resolve => setTimeout(resolve, 1000)); // wait for 1 second before checking
+                }
+
+                return {
+                    ...row,
+                    infoProduct: this.dataGet
+                }
+
+            }
+            return row
+        }))
+        return rs1;
     }
 
-    async getOrderById(orderId) {
-        const order = await this.ordersRepository.findById(orderId);
-        return order;
+    cancleOrder = async (idOrder) => {
+        const rs = await Order.findOne({ _id: idOrder }).lean();
+        if (!rs) {
+            return false;
+        }
+        if (rs.status === 'cancled' || rs.status === 'delivered') {
+            return false;
+        }
+        try {
+            const rs1 = await Order.updateOne({ _id: idOrder }, { status: 'cancled' });
+
+            const connection = await amqp.connect('amqp://guest:guest@huy_rabbitmq:5672');
+            const channel = await connection.createChannel();
+            // console.log(rs1)
+
+            channel.sendToQueue('refund-stock-product', Buffer.from(JSON.stringify({
+                products: rs.products,
+                quantity: rs.quantity
+            })))
+
+            return true;
+        } catch (error) {
+            return false;
+        }
+
     }
-
-
-    async checkOrderLimit(username) {
-        // const currentDay = new Date();
-        const targetDate = new Date(); // ngày bạn muốn so sánh
-        const orders = await this.ordersRepository.findByUsername(username);
-        const orderToday = orders.filter(row => {
-            const dateOr = new Date(row.createdAt);
-            const dateOnly = new Date(dateOr.getFullYear(), dateOr.getMonth(), dateOr.getDay())
-            const today = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDay());
-            return today.getTime() == dateOnly.getTime();
-        })
-        return orderToday.length;
-    }
-
-    async getOrders() {
-        const orders = await this.ordersRepository.findAll();
-        return orders;
-    }
-
-
-
 }
 
-module.exports = OrdersService;
+module.exports = OrderService;
