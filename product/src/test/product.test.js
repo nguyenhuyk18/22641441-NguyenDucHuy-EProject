@@ -15,6 +15,8 @@ describe("Products", () => {
     await Promise.all([app.connectDB(), app.setupMessageBroker()])
 
     // Authenticate with the auth microservice to get a token
+
+
     const authRes = await chai
       .request("http://huy_api_gateway:3003")
       .post("/auth/api/v1/login")
@@ -65,7 +67,7 @@ describe("Products", () => {
       const res = await chai
         .request(app.app)
         .post("/api/products")
-        .set("Authorization", `Bearer ${authToken}`)
+        .set("authorization", `Bearer ${authToken}`)
         .send(product);
 
       expect(res).to.have.status(400);
