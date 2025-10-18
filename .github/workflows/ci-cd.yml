@@ -50,7 +50,9 @@ jobs:
       # 7 Chạy file test trên product service 
       - name: Run File Test In Product Service 
         run: |
-          docker exec huy_product_service npm test
+          docker exec -e JWT_SECRET=$JWT_SECRET \
+                -e MONGO_URI=$MONGODB_PRODUCT_URI \
+                huy_product_service npm test
 
       # 6️⃣ Dừng container sau khi test
       - name: Stop containers
