@@ -1,0 +1,36 @@
+name: CI/CD - Microservices Docker
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Lấy code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2️⃣ Kiểm tra Docker
+      - name: Check Docker version
+        run: docker --version
+
+      # 3️⃣ Build tất cả Docker image theo docker-compose.yml
+      - name: Build Docker images
+        run: docker compose -f docker-compose.yml build
+
+      # 4️⃣ Chạy các container
+      - name: Start containers
+        run: docker compose -f docker-compose.yml up -d
+
+      # 5️⃣ Kiểm tra container đang chạy
+      - name: List running containers
+        run: docker ps
+
+      # 6️⃣ Dừng container sau khi test
+      - name: Stop containers
+        run: docker compose -f docker-compose.yml down
