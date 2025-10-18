@@ -15,6 +15,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+              # 2️⃣ Cài Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'   # dùng version Node bạn cần
+
       # 2️⃣ Kiểm tra Docker
       - name: Check Docker version
         run: docker --version
@@ -39,7 +45,7 @@ jobs:
       - name: Run File Test In Product Service 
         working-directory: ./product   # folder Product service
         run: |
-          npm install
+          npm install --unsafe-perm
           npm test
 
       # 6️⃣ Dừng container sau khi test
