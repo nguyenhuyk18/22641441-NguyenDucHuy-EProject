@@ -41,7 +41,7 @@ describe("Products", () => {
         quantity: 100
       };
       const res = await chai
-        .request(app.app)
+        .request('http://huy_api_gateway:3003')
         .post("/products/api/v1/add")
         .set("authorization", `Bearer ${authToken}`)
         .send({
@@ -65,7 +65,7 @@ describe("Products", () => {
         price: 10.99,
       };
       const res = await chai
-        .request(app.app)
+        .request('http://huy_api_gateway:3003')
         .post("/api/products")
         .set("authorization", `Bearer ${authToken}`)
         .send(product);
