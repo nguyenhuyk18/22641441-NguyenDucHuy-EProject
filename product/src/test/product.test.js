@@ -23,7 +23,7 @@ describe("Products", () => {
       .send({ username: 'testuser', password: "123456" });
 
     authToken = authRes.body.token;
-    console.log(authToken);
+    console.log(authToken, '  my token');
     app.start();
   });
 
