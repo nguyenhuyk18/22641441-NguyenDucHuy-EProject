@@ -10,6 +10,12 @@ jobs:
   build-and-run:
     runs-on: ubuntu-latest
 
+    env:  # Set secrets cho toàn job
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      MONGODB_PRODUCT_URI: ${{ secrets.MONGODB_PRODUCT_URI }}
+      MONGODB_ORDER_URI: ${{ secrets.MONGODB_ORDER_URI }}
+      MONGODB_AUTH_URI: ${{ secrets.MONGODB_AUTH_URI }}
+
     steps:
       # 1️⃣ Lấy code
       - name: Checkout code
