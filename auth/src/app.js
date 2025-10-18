@@ -21,9 +21,11 @@ class App {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     }).then(async () => {
-      await User.create({ username: "testuser", password: "123456" });
-      console.log("Seed user created");
-      process.exit(0);
+      const existingUser = await User.findOne({ username: "testuser" });
+      if (!existingUser) {
+        await User.create({ username: "testuser", password: "123456" });
+        console.log("Seed user created");
+      }
     });
     console.log("MongoDB connected");
   }
