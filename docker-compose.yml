@@ -54,6 +54,11 @@ services :
     depends_on:
       - huy_rabbitmq
       - huy_mongodb
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - MONGODB_PRODUCT_URI=${MONGODB_PRODUCT_URI}
+      - MONGODB_AUTH_URI=${MONGODB_AUTH_URI}
+      - MONGODB_ORDER_URI=${MONGODB_ORDER_URI}
     restart: unless-stopped
 
   huy_order_service : 
@@ -69,6 +74,11 @@ services :
     depends_on:
       - huy_rabbitmq
       - huy_mongodb
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - MONGODB_PRODUCT_URI=${MONGODB_PRODUCT_URI}
+      - MONGODB_AUTH_URI=${MONGODB_AUTH_URI}
+      - MONGODB_ORDER_URI=${MONGODB_ORDER_URI}
     restart: unless-stopped
 
   huy_product_service : 
@@ -84,6 +94,11 @@ services :
     depends_on:
       - huy_rabbitmq
       - huy_mongodb
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - MONGODB_PRODUCT_URI=${MONGODB_PRODUCT_URI}
+      - MONGODB_AUTH_URI=${MONGODB_AUTH_URI}
+      - MONGODB_ORDER_URI=${MONGODB_ORDER_URI}
     restart: unless-stopped
 
 volumes:
