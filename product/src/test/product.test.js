@@ -16,7 +16,7 @@ describe("Products", () => {
 
     // Authenticate with the auth microservice to get a token
     const authRes = await chai
-      .request("http://127.0.0.1:3003")
+      .request("http://huy_api_gateway:3003")
       .post("/auth/api/v1/login")
       .send({ username: 'testuser', password: "123456" });
 
