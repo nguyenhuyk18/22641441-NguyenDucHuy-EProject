@@ -28,8 +28,7 @@ describe("Products", () => {
   });
 
   after(async () => {
-    await app.disconnectDB();
-    app.stop();
+    console.log('complete !!!!')
   });
 
   describe("POST /products", () => {
