@@ -1,6 +1,18 @@
 version: "3.9" 
 
 services :
+  huy_mongodb :
+    image: mongo:6.0        
+    container_name: huy_mongodb
+    ports:
+      - "27018:27017"         
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: nguyenduchuy   
+      MONGO_INITDB_ROOT_PASSWORD: mongodb123 
+    volumes:
+      - huy_mongodb_data:/data/db       
+    restart: unless-stopped
+
   huy_rabbitmq : 
     image : rabbitmq:4-management
     container_name: huy_rabbitmq
@@ -72,3 +84,4 @@ services :
 
 volumes:
   huy_rabbitmq_data:
+  huy_mongodb_data:    # volume cho MongoDB

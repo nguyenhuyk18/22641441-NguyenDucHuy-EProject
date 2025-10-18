@@ -4,6 +4,7 @@ const config = require("./config");
 const authMiddleware = require("./middlewares/authMiddleware");
 const AuthController = require("./controllers/authController");
 const MessageBroker = require('./helpers/messageBroker');
+const User = require('./models/user')
 
 class App {
   constructor() {
@@ -19,6 +20,10 @@ class App {
     await mongoose.connect(config.mongoURI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+    }).then(async () => {
+      await User.create({ username: "testuser", password: "123456" });
+      console.log("Seed user created");
+      process.exit(0);
     });
     console.log("MongoDB connected");
   }

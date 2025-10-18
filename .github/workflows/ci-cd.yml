@@ -26,11 +26,24 @@ jobs:
       # 4️⃣ Chạy các container
       - name: Start containers
         run: docker compose -f docker-compose.yml up -d
+      
+      # ngủ 1 chút để mấy khứa container chạy cho xong
+      - name: Wait for containers to be ready
+        run: sleep 20
 
       # 5️⃣ Kiểm tra container đang chạy
       - name: List running containers
         run: docker ps
 
+      # 7 Chạy file test trên product service 
+      - name: Run File Test In Product Service 
+        working-directory: ./product   # folder Product service
+        run: |
+          npm install
+          npm test
+
       # 6️⃣ Dừng container sau khi test
       - name: Stop containers
         run: docker compose -f docker-compose.yml down
+
+

@@ -16,9 +16,9 @@ describe("Products", () => {
 
     // Authenticate with the auth microservice to get a token
     const authRes = await chai
-      .request("http://localhost:3000")
-      .post("/login")
-      .send({ username: process.env.LOGIN_TEST_USER, password: process.env.LOGIN_TEST_PASSWORD });
+      .request("http://127.0.0.1:3003")
+      .post("/auth/api/v1/login")
+      .send({ username: 'testuser', password: "123456" });
 
     authToken = authRes.body.token;
     console.log(authToken);
@@ -36,22 +36,25 @@ describe("Products", () => {
         name: "Product 1",
         description: "Description of Product 1",
         price: 10,
+        quantity: 100
       };
       const res = await chai
         .request(app.app)
-        .post("/api/products")
-        .set("Authorization", `Bearer ${authToken}`)
+        .post("/products/api/v1/add")
+        .set("authorization", `Bearer ${authToken}`)
         .send({
-            name: "Product 1",
-            price: 10,
-            description: "Description of Product 1"
-          });
+          name: "Product 1",
+          price: 10,
+          description: "Description of Product 1",
+          quantity: 100
+        });
 
       expect(res).to.have.status(201);
       expect(res.body).to.have.property("_id");
       expect(res.body).to.have.property("name", product.name);
       expect(res.body).to.have.property("description", product.description);
       expect(res.body).to.have.property("price", product.price);
+      expect(res.body).to.have.property("quantity", product.quantity);
     });
 
     it("should return an error if name is missing", async () => {
@@ -67,6 +70,7 @@ describe("Products", () => {
 
       expect(res).to.have.status(400);
     });
+
   });
 });
 
