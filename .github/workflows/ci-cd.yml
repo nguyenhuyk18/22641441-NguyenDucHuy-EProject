@@ -31,10 +31,10 @@ jobs:
 
       - name: Generate .env file for CI
         run: |
-          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env.ci
-          echo "MONGODB_PRODUCT_URI=${{ secrets.MONGODB_PRODUCT_URI }}" >> .env.ci
-          echo "MONGODB_ORDER_URI=${{ secrets.MONGODB_ORDER_URI }}" >> .env.ci
-          echo "MONGODB_AUTH_URI=${{ secrets.MONGODB_AUTH_URI }}" >> .env.ci
+          echo "JWT_SECRET=${{ vars.JWT_SECRET }}" >> .env.ci
+          echo "MONGODB_PRODUCT_URI=${{ vars.MONGODB_PRODUCT_URI }}" >> .env.ci
+          echo "MONGODB_ORDER_URI=${{ vars.MONGODB_ORDER_URI }}" >> .env.ci
+          echo "MONGODB_AUTH_URI=${{ vars.MONGODB_AUTH_URI }}" >> .env.ci
 
 
 
@@ -45,6 +45,10 @@ jobs:
       # ngủ 1 chút để mấy khứa container chạy cho xong
       - name: Wait for containers to be ready
         run: sleep 10
+
+            # 5️⃣ Kiểm tra container đang chạy
+      - name: List running containers
+        run: echo "hello ${{ vars.JWT_SECRET }} , ${{ vars.MONGODB_PRODUCT_URI }} , ${{ vars.MONGODB_ORDER_URI }}"
 
       # 5️⃣ Kiểm tra container đang chạy
       - name: List running containers
