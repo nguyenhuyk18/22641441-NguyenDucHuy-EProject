@@ -20,13 +20,7 @@ class App {
     await mongoose.connect(config.mongoURI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-    }).then(async () => {
-      const existingUser = await User.findOne({ username: "testuser" });
-      if (!existingUser) {
-        await User.create({ username: "testuser", password: "123456" });
-        console.log("Seed user created");
-      }
-    });
+    })
     console.log("MongoDB connected");
   }
 
