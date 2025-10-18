@@ -65,7 +65,7 @@ describe("Products", () => {
       };
       const res = await chai
         .request('http://huy_api_gateway:3003')
-        .post("/api/products")
+        .post("/products/api/v1/add")
         .set("authorization", `Bearer ${authToken}`)
         .send(product);
 
