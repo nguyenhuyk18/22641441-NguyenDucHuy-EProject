@@ -29,7 +29,30 @@ jobs:
       - name: Build Docker images
         run: docker compose -f docker-compose.yml build
 
-      # 4️⃣ LƯU IMAGE đã build để chuyển sang Job "deploys" (Đây là bước quan trọng nhất)
+      # NEW STEP: Đặt tên tag ngắn gọn cho Image cục bộ.
+      # Bước này đảm bảo tên Image cục bộ trùng khớp với tên trong IMAGES_TO_SAVE.
+      - name: Tag Built Images to Simple Names
+        run: |
+          # Các service được xây dựng từ docker compose
+          SERVICES=("huy_api_gateway" "huy_auth_service" "huy_order_service" "huy_product_service")
+          
+          for SERVICE in ${SERVICES[@]}; do
+            # Lấy tên image do Docker Compose tạo ra (thường là tên thư mục + service name)
+            # Lệnh này dựa vào label 'com.docker.compose.service' để tìm image
+            COMPOSE_IMAGE_NAME=$(docker images --filter "label=com.docker.compose.service=${SERVICE}" --format "{{.Repository}}:{{.Tag}}")
+            
+            if [ -n "$COMPOSE_IMAGE_NAME" ]; then
+              # Tag image vừa tìm được bằng tên ngắn gọn
+              echo "Tagging ${COMPOSE_IMAGE_NAME} to ${SERVICE}:latest"
+              docker tag "$COMPOSE_IMAGE_NAME" "${SERVICE}:latest"
+            else
+              echo "🚨 LỖI NGHIÊM TRỌNG: Không tìm thấy image cho service ${SERVICE} sau khi build. Vui lòng kiểm tra lại file docker-compose.yml và tên service."
+              docker images # In danh sách image để Debug
+              exit 1 # Dừng workflow
+            fi
+          done
+
+      # 4️⃣ LƯU IMAGE đã build để chuyển sang Job "deploys" (Bao gồm Tag 'latest')
       - name: Save Docker Images for Deployment
         run: |
           IMAGES_TO_SAVE="huy_api_gateway:latest huy_auth_service:latest huy_order_service:latest huy_product_service:latest"
@@ -38,11 +61,10 @@ jobs:
 
       # 5️⃣ UPLOAD file chứa các Image (SỬ DỤNG V4)
       - name: Upload built images artifact
-        uses: actions/upload-artifact@v4 # <<< ĐÃ SỬA V3 THÀNH V4
+        uses: actions/upload-artifact@v4
         with:
           name: built-microservices-images
           path: built_images.tar
-          # Thêm tùy chọn để đảm bảo file được upload thành công
           retention-days: 1 
 
       - name: Generate .env file for CI
@@ -87,10 +109,10 @@ jobs:
       
       # 2️⃣ TẢI XUỐNG file chứa các Image đã build từ Job 1 (SỬ DỤNG V4)
       - name: Download built images artifact
-        uses: actions/download-artifact@v4 # <<< ĐÃ SỬA V3 THÀNH V4
+        uses: actions/download-artifact@v4
         with:
           name: built-microservices-images
-          path: . # Tải artifact về thư mục gốc
+          path: . 
 
       # 3️⃣ LOAD lại các Image vào Docker daemon của Runner này
       - name: Load Docker Images
@@ -116,7 +138,7 @@ jobs:
 
             echo "Bắt đầu đẩy image $SERVICE..."
 
-            # Lệnh tag bây giờ chắc chắn thành công vì image đã được load
+            # Lệnh tag này bây giờ chắc chắn thành công vì Job 1 đã tag lại
             # 1. Tag và Push bằng mã SHA (Lịch sử)
             docker tag $SERVICE:latest $DOCKER_REPO/$REPO_NAME:$TAG
             docker push $DOCKER_REPO/$REPO_NAME:$TAG
