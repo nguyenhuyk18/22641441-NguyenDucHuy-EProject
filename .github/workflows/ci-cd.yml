@@ -42,7 +42,7 @@ jobs:
       
       # ngủ 1 chút để mấy khứa container chạy cho xong
       - name: Wait for containers to be ready
-        run: sleep 5
+        run: sleep 25
 
       # 5️⃣ Kiểm tra container đang chạy
       - name: list var to check

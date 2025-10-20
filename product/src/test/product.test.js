@@ -123,6 +123,9 @@ describe("Products", () => {
 
   describe("POST /order", () => {
     it("save orders success", async () => {
+
+      console.log(listProduct)
+
       const res = await chai
         .request('http://huy_api_gateway:3003')
         .post("/products/api/v1/buy")

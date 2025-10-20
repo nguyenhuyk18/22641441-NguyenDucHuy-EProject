@@ -161,7 +161,7 @@ class App {
       } catch (err) {
         console.error("Failed to connect to RabbitMQ:", err.message);
       }
-    }, 10000); // add a delay to wait for RabbitMQ to start in docker-compose
+    }, 20000); // add a delay to wait for RabbitMQ to start in docker-compose
   }
 
 
