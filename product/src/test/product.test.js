@@ -10,6 +10,7 @@ chai.use(chaiHttp);
 describe("Products", () => {
   // let app;
   let authToken;
+  let listProduct;
   before(async () => {
 
     const authRes = await chai
@@ -30,6 +31,23 @@ describe("Products", () => {
         description: "Description of Product 8989",
         quantity: 100
       });
+
+    await chai
+      .request('http://huy_api_gateway:3003')
+      .post("/products/api/v1/add")
+      .set("authorization", `Bearer ${authToken}`)
+      .send({
+        name: "Product 9898",
+        price: 100000,
+        description: "Description of Product 9898",
+        quantity: 100
+      });
+
+    // lay cac product co san de test !!!
+    listProduct = await chai
+      .request('http://huy_api_gateway:3003')
+      .get("/products/api/v1")
+      .set("authorization", `Bearer ${authToken}`)
   });
 
   after(async () => {
@@ -80,8 +98,8 @@ describe("Products", () => {
 
   });
 
-
-  describe("GET /", () => {
+  // done
+  describe("GET /products", () => {
     it("get all product", async () => {
       const res = await chai
         .request('http://huy_api_gateway:3003')
@@ -100,6 +118,27 @@ describe("Products", () => {
       expect(firstProduct).to.have.property("description").that.is.a("string");
       expect(firstProduct).to.have.property("price").that.is.a("number");
       expect(firstProduct).to.have.property("quantity").that.is.a("number");
+    });
+  })
+
+  describe("POST /order", () => {
+    it("save orders success", async () => {
+      const res = await chai
+        .request('http://huy_api_gateway:3003')
+        .post("/products/api/v1/buy")
+        .set("authorization", `Bearer ${authToken}`)
+        .send(
+          {
+            "ids": [
+              { "id": listProduct[0]._id, "quantity": 12 },
+              { "id": listProduct[1]._id, "quantity": 28 }
+            ]
+          }
+        )
+
+
+      expect(res).to.have.status(200);
+      expect(res.body).to.have.property("message", 'Đã cập nhật đơn hàng thành công !!');
     });
   })
 });
