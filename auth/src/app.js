@@ -9,6 +9,7 @@ const bcrypt = require("bcryptjs"); // Thêm bcrypt để hash mật khẩu
 
 class App {
   constructor() {
+
     this.app = express();
     this.authController = new AuthController();
     this.connectDB();
@@ -18,11 +19,18 @@ class App {
   }
 
   async connectDB() {
-    await mongoose.connect(config.mongoURI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
-    console.log("MongoDB connected");
+    try {
+      // console.log(config.mongoURI, 'đường dẫn môngdb');
+      await mongoose.connect(config.mongoURI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      })
+      console.log("MongoDB connected");
+    } catch (err) {
+      console.log(err);
+    }
+
+
   }
 
   async seedDB() {

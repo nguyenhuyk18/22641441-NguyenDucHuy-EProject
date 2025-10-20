@@ -11,26 +11,32 @@ describe("Products", () => {
   // let app;
   let authToken;
   before(async () => {
-    // app = new App();
-    // await Promise.all([app.connectDB(), app.setupMessageBroker()])
-
-    // Authenticate with the auth microservice to get a token
-
 
     const authRes = await chai
       .request("http://huy_api_gateway:3003")
       .post("/auth/api/v1/login")
       .send({ username: "testuser", password: "123456" });
-    console.log(authRes.body, '  my token');
+    // console.log(authRes.body, '  my token');
     authToken = authRes.body?.token || '';
 
-    // app.start();
+    // thêm trước 1 product
+    await chai
+      .request('http://huy_api_gateway:3003')
+      .post("/products/api/v1/add")
+      .set("authorization", `Bearer ${authToken}`)
+      .send({
+        name: "Product 8989",
+        price: 100000,
+        description: "Description of Product 8989",
+        quantity: 100
+      });
   });
 
   after(async () => {
     console.log('complete !!!!')
   });
 
+  // done
   describe("POST /products", () => {
     it("should create a new product", async () => {
       const product = {
@@ -73,5 +79,28 @@ describe("Products", () => {
     });
 
   });
+
+
+  describe("GET /", () => {
+    it("get all product", async () => {
+      const res = await chai
+        .request('http://huy_api_gateway:3003')
+        .get("/products/api/v1")
+        .set("authorization", `Bearer ${authToken}`)
+
+
+      expect(res).to.have.status(200);
+
+      expect(res.body).to.be.an("array");
+      expect(res.body.length).to.be.greaterThan(0);
+
+      const firstProduct = res.body[0];
+      expect(firstProduct).to.have.property("_id");
+      expect(firstProduct).to.have.property("name").that.is.a("string");
+      expect(firstProduct).to.have.property("description").that.is.a("string");
+      expect(firstProduct).to.have.property("price").that.is.a("number");
+      expect(firstProduct).to.have.property("quantity").that.is.a("number");
+    });
+  })
 });
 
