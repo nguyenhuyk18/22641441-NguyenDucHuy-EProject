@@ -130,8 +130,8 @@ describe("Products", () => {
         .send(
           {
             "ids": [
-              { "id": listProduct[0]._id, "quantity": 12 },
-              { "id": listProduct[1]._id, "quantity": 28 }
+              { "id": listProduct.body[0]._id, "quantity": 12 },
+              { "id": listProduct.body[1]._id, "quantity": 28 }
             ]
           }
         )
