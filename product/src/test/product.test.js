@@ -8,8 +8,8 @@ chai.use(chaiHttp);
 
 
 describe("Products", () => {
-  let app;
-
+  // let app;
+  let authToken;
   before(async () => {
     // app = new App();
     // await Promise.all([app.connectDB(), app.setupMessageBroker()])
@@ -17,12 +17,12 @@ describe("Products", () => {
     // Authenticate with the auth microservice to get a token
 
 
-    // const authRes = await chai
-    //   .request("http://huy_api_gateway:3003")
-    //   .post("/auth/api/v1/login")
-    //   .send({ username: 'testuser', password: "123456" });
+    const authRes = await chai
+      .request("http://huy_api_gateway:3003")
+      .post("/auth/api/v1/login")
+      .send({ username: "testuser", password: "123456" });
 
-    authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZjM1ODM5OWU3ZGJhNmIxMWU1MGUyYSIsInVzZXJuYW1lIjoiY2hhY2hhIiwiaWF0IjoxNzYwNzc4MzY5fQ.IjeZ8uiu0PGZ0eulPuBp9opYMAkn6jk9B2duWzqrVuU';
+    authToken = authRes.body.token;
     // console.log(authRes.body, '  my token');
     // app.start();
   });

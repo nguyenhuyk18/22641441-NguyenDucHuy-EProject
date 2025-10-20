@@ -5,6 +5,7 @@ const authMiddleware = require("./middlewares/authMiddleware");
 const AuthController = require("./controllers/authController");
 const MessageBroker = require('./helpers/messageBroker');
 const User = require('./models/user')
+const bcrypt = require("bcrypt"); // Thêm bcrypt để hash mật khẩu
 
 class App {
   constructor() {
@@ -22,6 +23,29 @@ class App {
       useUnifiedTopology: true,
     })
     console.log("MongoDB connected");
+  }
+
+  async seedDB() {
+    try {
+      // Kiểm tra xem tài khoản testuser đã tồn tại chưa
+      const existingUser = await User.findOne({ username: "testuser" });
+      if (!existingUser) {
+        // Hash mật khẩu
+        const hashedPassword = await bcrypt.hash("123456", 10);
+
+        // Tạo tài khoản testuser
+        await User.create({
+          username: "testuser",
+          password: hashedPassword,
+        });
+        console.log("Test user seeded successfully");
+      } else {
+        console.log("Test user already exists, skipping seeding");
+      }
+    } catch (error) {
+      console.error("Seeding error:", error);
+      throw error;
+    }
   }
 
   async disconnectDB() {
@@ -44,7 +68,8 @@ class App {
     this.app.get("/auth/api/v1/dashboard", authMiddleware, this.authController.getProfile);
   }
 
-  start() {
+  async start() {
+    await this.seedDB();
     this.server = this.app.listen(3000, () => console.log("Server started on port 3000"));
   }
 

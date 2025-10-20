@@ -45,7 +45,7 @@ jobs:
         run: sleep 10
 
       # 5️⃣ Kiểm tra container đang chạy
-      - name: List running containers
+      - name: list var to check
         run: echo "hello ${{ vars.JWT_SECRET }} , ${{ vars.MONGODB_PRODUCT_URI }} , ${{ vars.MONGODB_ORDER_URI }}"
 
       # 5️⃣ Kiểm tra container đang chạy
@@ -69,11 +69,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       
-      # 2️⃣ REBUILD TỪ ĐẦU (Theo yêu cầu)
+      # 2️⃣ REBUILD TỪ ĐẦU 
       - name: Rebuild Docker Images for Deployment
         run: docker compose -f docker-compose.yml build --no-cache
 
-      # 3️⃣ Tag Image: Vì rebuild nên nó lại có tên dài, chúng ta phải tag lại thành tên ngắn gọn (vd: huy_api_gateway:latest)
+      # 3️⃣ Tag Image: Vì rebuild nên nó lại có tên dài
       - name: Tag Built Images to Simple Names
         run: |
           SERVICES=("huy_api_gateway" "huy_auth_service" "huy_order_service" "huy_product_service")
