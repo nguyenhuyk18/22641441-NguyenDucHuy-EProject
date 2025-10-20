@@ -32,16 +32,18 @@ jobs:
       # 4️⃣ LƯU IMAGE đã build để chuyển sang Job "deploys" (Đây là bước quan trọng nhất)
       - name: Save Docker Images for Deployment
         run: |
-          IMAGES_TO_SAVE="huy_api_gateway huy_auth_service huy_order_service huy_product_service"
+          IMAGES_TO_SAVE="huy_api_gateway:latest huy_auth_service:latest huy_order_service:latest huy_product_service:latest"
           # Sử dụng docker save để đóng gói tất cả các image cần thiết vào một file tar
           docker save ${IMAGES_TO_SAVE} -o built_images.tar
 
-      # 5️⃣ UPLOAD file chứa các Image (artifact)
+      # 5️⃣ UPLOAD file chứa các Image (SỬ DỤNG V4)
       - name: Upload built images artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4 # <<< ĐÃ SỬA V3 THÀNH V4
         with:
           name: built-microservices-images
           path: built_images.tar
+          # Thêm tùy chọn để đảm bảo file được upload thành công
+          retention-days: 1 
 
       - name: Generate .env file for CI
         run: |
@@ -82,37 +84,39 @@ jobs:
       # 1️⃣ Lấy code
       - name: Checkout code
         uses: actions/checkout@v3
-        
-      # 2️⃣ TẢI XUỐNG file chứa các Image đã build từ Job 1
+      
+      # 2️⃣ TẢI XUỐNG file chứa các Image đã build từ Job 1 (SỬ DỤNG V4)
       - name: Download built images artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4 # <<< ĐÃ SỬA V3 THÀNH V4
         with:
           name: built-microservices-images
+          path: . # Tải artifact về thư mục gốc
 
-            # 3️⃣ LOAD lại các Image vào Docker daemon của Runner này
+      # 3️⃣ LOAD lại các Image vào Docker daemon của Runner này
       - name: Load Docker Images
         run: docker load -i built_images.tar
-
+        
+      # 4️⃣ Login to Docker Hub
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }} # Sử dụng Access Token đã lưu
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 4️⃣ Tag và Push các Image lên Docker Hub
+      # 5️⃣ Tag và Push các Image lên Docker Hub
       - name: Tag and Push Images
         env:
-          DOCKER_REPO: ${{ secrets.DOCKER_USERNAME }} # bbnysatrisde
-          TAG: ${{ github.sha }} # Mã commit SHA (Unique tag)
+          DOCKER_REPO: ${{ secrets.DOCKER_USERNAME }}
+          TAG: ${{ github.sha }}
         run: |
-          # --- Danh sách Microservices cần đẩy lên Docker Hub ---
           SERVICES=("huy_api_gateway" "huy_auth_service" "huy_order_service" "huy_product_service")
 
           for SERVICE in ${SERVICES[@]}; do
-            REPO_NAME=$(echo $SERVICE | cut -d'_' -f2-) # Lấy tên repository (ví dụ: product_service)
+            REPO_NAME=$(echo $SERVICE | cut -d'_' -f2-)
 
             echo "Bắt đầu đẩy image $SERVICE..."
 
+            # Lệnh tag bây giờ chắc chắn thành công vì image đã được load
             # 1. Tag và Push bằng mã SHA (Lịch sử)
             docker tag $SERVICE:latest $DOCKER_REPO/$REPO_NAME:$TAG
             docker push $DOCKER_REPO/$REPO_NAME:$TAG
