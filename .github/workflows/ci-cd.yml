@@ -36,8 +36,6 @@ jobs:
           echo "MONGODB_ORDER_URI=${{ vars.MONGODB_ORDER_URI }}" >> .env.ci
           echo "MONGODB_AUTH_URI=${{ vars.MONGODB_AUTH_URI }}" >> .env.ci
 
-
-
       # 6️⃣ Start containers
       - name: Start containers
         run: docker compose --env-file .env.ci -f docker-compose.yml up -d
@@ -46,7 +44,7 @@ jobs:
       - name: Wait for containers to be ready
         run: sleep 10
 
-            # 5️⃣ Kiểm tra container đang chạy
+      # 5️⃣ Kiểm tra container đang chạy
       - name: List running containers
         run: echo "hello ${{ vars.JWT_SECRET }} , ${{ vars.MONGODB_PRODUCT_URI }} , ${{ vars.MONGODB_ORDER_URI }}"
 
@@ -62,4 +60,48 @@ jobs:
       - name: Stop containers
         run: docker compose -f docker-compose.yml down
 
+    deploys:
+      runs-on: ubuntu-latest
+      needs: build-and-run # CHÍNH XÁC: Tham chiếu đến tên Job trên.
 
+      steps:
+      # 1️⃣ Lấy code
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      # 2️⃣ Build lại (để đảm bảo image có sẵn trên runner này)
+      - name: Rebuild Docker images for deployment
+        run: docker compose -f docker-compose.yml build
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }} # Sử dụng Access Token đã lưu
+
+      # 4️⃣ Tag và Push các Image lên Docker Hub
+      - name: Tag and Push Images
+        env:
+          DOCKER_REPO: ${{ secrets.DOCKER_USERNAME }} # bbnysatrisde
+          TAG: ${{ github.sha }} # Mã commit SHA (Unique tag)
+        run: |
+          # --- Danh sách Microservices cần đẩy lên Docker Hub ---
+          SERVICES=("huy_api_gateway" "huy_auth_service" "huy_order_service" "huy_product_service")
+
+          for SERVICE in ${SERVICES[@]}; do
+            REPO_NAME=$(echo $SERVICE | cut -d'_' -f2-) # Lấy tên repository (ví dụ: product_service)
+
+            echo "Bắt đầu đẩy image $SERVICE..."
+
+            # 1. Tag và Push bằng mã SHA (Lịch sử)
+            docker tag $SERVICE:latest $DOCKER_REPO/$REPO_NAME:$TAG
+            docker push $DOCKER_REPO/$REPO_NAME:$TAG
+
+            # 2. Tag và Push bằng tag 'latest' (Phiên bản mới nhất)
+            docker tag $SERVICE:latest $DOCKER_REPO/$REPO_NAME:latest
+            docker push $DOCKER_REPO/$REPO_NAME:latest
+
+            echo "Đã hoàn thành $DOCKER_REPO/$REPO_NAME"
+          done
+
+          echo "Đã hoàn thành việc đẩy tất cả images."
