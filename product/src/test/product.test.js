@@ -21,9 +21,9 @@ describe("Products", () => {
       .request("http://huy_api_gateway:3003")
       .post("/auth/api/v1/login")
       .send({ username: "testuser", password: "123456" });
+    console.log(authRes.body, '  my token');
+    authToken = authRes.body?.token || '';
 
-    authToken = authRes.body.token;
-    // console.log(authRes.body, '  my token');
     // app.start();
   });
 
