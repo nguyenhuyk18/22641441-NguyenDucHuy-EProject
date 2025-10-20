@@ -60,11 +60,11 @@ jobs:
       - name: Stop containers
         run: docker compose -f docker-compose.yml down
 
-    deploys:
-      runs-on: ubuntu-latest
-      needs: build-and-run # CHÍNH XÁC: Tham chiếu đến tên Job trên.
+  deploys:
+    runs-on: ubuntu-latest
+    needs: build-and-run # CHÍNH XÁC: Tham chiếu đến tên Job trên.
 
-      steps:
+    steps:
       # 1️⃣ Lấy code
       - name: Checkout code
         uses: actions/checkout@v3
