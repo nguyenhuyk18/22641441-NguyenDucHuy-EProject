@@ -15,7 +15,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-              # 2️⃣ Cài Node.js
+      # 2️⃣ Cài Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -28,44 +28,6 @@ jobs:
       # 3️⃣ Build tất cả Docker image theo docker-compose.yml
       - name: Build Docker images
         run: docker compose -f docker-compose.yml build
-
-      # NEW STEP: Đặt tên tag ngắn gọn cho Image cục bộ.
-      # Bước này đảm bảo tên Image cục bộ trùng khớp với tên trong IMAGES_TO_SAVE.
-      - name: Tag Built Images to Simple Names
-        run: |
-          # Các service được xây dựng từ docker compose
-          SERVICES=("huy_api_gateway" "huy_auth_service" "huy_order_service" "huy_product_service")
-          
-          for SERVICE in ${SERVICES[@]}; do
-            # Lấy tên image do Docker Compose tạo ra (thường là tên thư mục + service name)
-            # Lệnh này dựa vào label 'com.docker.compose.service' để tìm image
-            COMPOSE_IMAGE_NAME=$(docker images --filter "label=com.docker.compose.service=${SERVICE}" --format "{{.Repository}}:{{.Tag}}")
-            
-            if [ -n "$COMPOSE_IMAGE_NAME" ]; then
-              # Tag image vừa tìm được bằng tên ngắn gọn
-              echo "Tagging ${COMPOSE_IMAGE_NAME} to ${SERVICE}:latest"
-              docker tag "$COMPOSE_IMAGE_NAME" "${SERVICE}:latest"
-            else
-              echo "🚨 LỖI NGHIÊM TRỌNG: Không tìm thấy image cho service ${SERVICE} sau khi build. Vui lòng kiểm tra lại file docker-compose.yml và tên service."
-              docker images # In danh sách image để Debug
-              exit 1 # Dừng workflow
-            fi
-          done
-
-      # 4️⃣ LƯU IMAGE đã build để chuyển sang Job "deploys" (Bao gồm Tag 'latest')
-      - name: Save Docker Images for Deployment
-        run: |
-          IMAGES_TO_SAVE="huy_api_gateway:latest huy_auth_service:latest huy_order_service:latest huy_product_service:latest"
-          # Sử dụng docker save để đóng gói tất cả các image cần thiết vào một file tar
-          docker save ${IMAGES_TO_SAVE} -o built_images.tar
-
-      # 5️⃣ UPLOAD file chứa các Image (SỬ DỤNG V4)
-      - name: Upload built images artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: built-microservices-images
-          path: built_images.tar
-          retention-days: 1 
 
       - name: Generate .env file for CI
         run: |
@@ -107,16 +69,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       
-      # 2️⃣ TẢI XUỐNG file chứa các Image đã build từ Job 1 (SỬ DỤNG V4)
-      - name: Download built images artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: built-microservices-images
-          path: . 
+      # 2️⃣ REBUILD TỪ ĐẦU (Theo yêu cầu)
+      - name: Rebuild Docker Images for Deployment
+        run: docker compose -f docker-compose.yml build --no-cache
 
-      # 3️⃣ LOAD lại các Image vào Docker daemon của Runner này
-      - name: Load Docker Images
-        run: docker load -i built_images.tar
+      # 3️⃣ Tag Image: Vì rebuild nên nó lại có tên dài, chúng ta phải tag lại thành tên ngắn gọn (vd: huy_api_gateway:latest)
+      - name: Tag Built Images to Simple Names
+        run: |
+          SERVICES=("huy_api_gateway" "huy_auth_service" "huy_order_service" "huy_product_service")
+          
+          for SERVICE in ${SERVICES[@]}; do
+            # Tìm tên image đầy đủ (Repository) có chứa tên SERVICE của bạn
+            COMPOSE_FULL_NAME=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep "${SERVICE}:latest" | head -n 1)
+
+            if [ -n "$COMPOSE_FULL_NAME" ]; then
+              # Gán tên ngắn gọn (Tag) cho image tên dài vừa tìm được
+              echo "Tagging image: $COMPOSE_FULL_NAME thành tên ngắn: ${SERVICE}:latest"
+              docker tag "$COMPOSE_FULL_NAME" "${SERVICE}:latest"
+            else
+              echo "❌ LỖI NGHIÊM TRỌNG: Không tìm thấy image $SERVICE sau khi rebuild. Vui lòng kiểm tra lại file docker-compose.yml và tên service."
+              docker images
+              exit 1
+            fi
+          done
+
+      # DEBUG: Kiểm tra danh sách Image sau khi Tagging
+      - name: Verify Tagged Images
+        run: docker images
         
       # 4️⃣ Login to Docker Hub
       - name: Login to Docker Hub
@@ -138,8 +117,7 @@ jobs:
 
             echo "Bắt đầu đẩy image $SERVICE..."
 
-            # Lệnh tag này bây giờ chắc chắn thành công vì Job 1 đã tag lại
-            # 1. Tag và Push bằng mã SHA (Lịch sử)
+            # 1. Tag và Push bằng mã SHA (Lịch sử) - Sử dụng tên ngắn gọn (đã được tag ở bước 3)
             docker tag $SERVICE:latest $DOCKER_REPO/$REPO_NAME:$TAG
             docker push $DOCKER_REPO/$REPO_NAME:$TAG
 
