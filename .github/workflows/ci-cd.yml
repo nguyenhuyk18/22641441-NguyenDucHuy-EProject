@@ -40,7 +40,7 @@ jobs:
       - name: Start containers
         run: docker compose --env-file .env.ci -f docker-compose.yml up -d
       
-      # ngủ 1 chút để mấy khứa container chạy cho xong
+      # ngủ 1 chút để các container chạy cho xong ( các service cần để kết nối tới rabbitmq )
       - name: Wait for containers to be ready
         run: sleep 25
 

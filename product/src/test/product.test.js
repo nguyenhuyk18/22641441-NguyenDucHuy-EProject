@@ -124,7 +124,7 @@ describe("Products", () => {
   describe("POST /order", () => {
     it("save orders success", async () => {
 
-      console.log(listProduct)
+      console.log(listProduct.body)
 
       const res = await chai
         .request('http://huy_api_gateway:3003')
