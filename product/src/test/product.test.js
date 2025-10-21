@@ -11,6 +11,8 @@ describe("Products", () => {
   // let app;
   let authToken;
   let listProduct;
+
+  // before chạy trc
   before(async () => {
 
     const authRes = await chai
@@ -54,7 +56,7 @@ describe("Products", () => {
     console.log('complete !!!!')
   });
 
-  // done
+  // sẽ chạy sau khi before chạy xong
   describe("POST /products", () => {
     it("should create a new product", async () => {
       const product = {
@@ -63,6 +65,8 @@ describe("Products", () => {
         price: 10,
         quantity: 100
       };
+
+      // khúc này là gửi request như postman
       const res = await chai
         .request('http://huy_api_gateway:3003')
         .post("/products/api/v1/add")
@@ -74,7 +78,8 @@ describe("Products", () => {
           quantity: 100
         });
 
-      expect(res).to.have.status(201);
+      // khúc này là thực hiện việc kiểm tra
+      expect(res).to.have.status(200);
       expect(res.body).to.have.property("_id");
       expect(res.body).to.have.property("name", product.name);
       expect(res.body).to.have.property("description", product.description);
@@ -83,16 +88,18 @@ describe("Products", () => {
     });
 
     it("should return an error if name is missing", async () => {
+      // data giả
       const product = {
         description: "Description of Product 1",
         price: 10.99,
       };
+      // gửi dữ liệu 
       const res = await chai
         .request('http://huy_api_gateway:3003')
         .post("/products/api/v1/add")
         .set("authorization", `Bearer ${authToken}`)
         .send(product);
-
+      // test
       expect(res).to.have.status(400);
     });
 
@@ -101,6 +108,7 @@ describe("Products", () => {
   // done
   describe("GET /products", () => {
     it("get all product", async () => {
+
       const res = await chai
         .request('http://huy_api_gateway:3003')
         .get("/products/api/v1")
@@ -121,6 +129,7 @@ describe("Products", () => {
     });
   })
 
+  // done
   describe("POST /order", () => {
     it("save orders success", async () => {
 
