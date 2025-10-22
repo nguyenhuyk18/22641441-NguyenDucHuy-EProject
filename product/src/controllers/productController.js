@@ -37,6 +37,12 @@ class ProductController {
     }
   }
 
+  getProductId = async (req, res) => {
+    const id = req.params.id;
+    const rs = await this.productService.getProductById(id);
+    return res.status(200).json(rs);
+  }
+
   async createOrder(req, res) {
     const token = req.headers.authorization;
     if (!token) {

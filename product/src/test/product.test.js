@@ -79,7 +79,7 @@ describe("Products", () => {
         });
 
       // khúc này là thực hiện việc kiểm tra
-      expect(res).to.have.status(200);
+      expect(res).to.have.status(201);
       expect(res.body).to.have.property("_id");
       expect(res.body).to.have.property("name", product.name);
       expect(res.body).to.have.property("description", product.description);
