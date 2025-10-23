@@ -7,8 +7,8 @@ Toàn bộ hệ thống được **đóng gói bằng Docker** và tích hợp *
 
 ## 🧱 CẤU TRÚC CHÍNH CỦA HỆ THỐNG
 
-- **Ngôn ngữ & Framework:** Node.js / Express (hoặc framework tương ứng)  
-- **Cơ sở dữ liệu:** MongoDB / MySQL / PostgreSQL  
+- **Ngôn ngữ & Framework:** Node.js / Express 
+- **Cơ sở dữ liệu:** MongoDB  
 - **Container hóa:** Docker & Docker Compose  
 - **CI/CD:** GitHub Actions   
 - **API Authentication:** JWT (JSON Web Token)  
