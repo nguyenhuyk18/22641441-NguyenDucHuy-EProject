@@ -18,42 +18,42 @@ Toàn bộ hệ thống được **đóng gói bằng Docker** và tích hợp *
 ## ⚙️ CÁC CHỨC NĂNG CHÍNH ĐƯỢC TEST
 
 ### 1️⃣ Đăng ký tài khoản  
-Người dùng có thể tạo tài khoản mới thông qua API `/api/auth/register`.  
+Người dùng có thể tạo tài khoản mới thông qua API `/auth/api/v1/register`.  
 > **Ảnh minh chứng:**  
 > ![Test API Đăng ký tài khoản](public/1_image.png)
 
 ---
 
 ### 2️⃣ Đăng nhập và nhận token  
-Sau khi đăng nhập thành công qua `/api/auth/login`, hệ thống trả về **JWT Token** để xác thực các request tiếp theo.  
+Sau khi đăng nhập thành công qua `/auth/api/v1/login`, hệ thống trả về **JWT Token** để xác thực các request tiếp theo.  
 > **Ảnh minh chứng:**  
 > ![Test API Đăng nhập](public/2_image.png)
 
 ---
 
 ### 3️⃣ Xem thông tin tài khoản  
-Người dùng có thể dùng **JWT token** để lấy thông tin cá nhân tại `/api/user/me`.  
+Người dùng có thể dùng **JWT token** để lấy thông tin cá nhân tại `/auth/api/v1/dashboard`.  
 > **Ảnh minh chứng:**  
 > ![Test API Xem thông tin tài khoản](public/3_image.png)
 
 ---
 
 ### 4️⃣ Thêm sản phẩm mới  
-API `/api/products/add` cho phép thêm sản phẩm mới vào hệ thống.  
+API `/products/api/v1/add` cho phép thêm sản phẩm mới vào hệ thống.  
 > **Ảnh minh chứng:**  
 > ![Test API Thêm sản phẩm mới](public/4_image.png)
 
 ---
 
 ### 5️⃣ Lấy danh sách tất cả sản phẩm  
-API `/api/products/all` giúp lấy danh sách sản phẩm có trong hệ thống.  
+API `/products/api/v1` giúp lấy danh sách sản phẩm có trong hệ thống.  
 > **Ảnh minh chứng:**  
 > ![Test API Lấy hết sản phẩm](public/5_image.png)
 
 ---
 
 ### 6️⃣ Tạo đơn hàng mới  
-API `/api/orders/create` cho phép người dùng tạo đơn hàng mới.  
+API `/products/api/v1/buy` cho phép người dùng tạo đơn hàng mới.  
 > **Ảnh minh chứng:**  
 > ![Test API Thêm đơn hàng mới](public/6_image.png)
 
