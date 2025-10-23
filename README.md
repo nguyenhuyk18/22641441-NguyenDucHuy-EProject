@@ -1,112 +1,78 @@
-# 🐇 Case Study: Microservices với RabbitMQ, API Gateway & JWT
+# 🚀 HỆ THỐNG API QUẢN LÝ SẢN PHẨM & ĐƠN HÀNG  
 
-Dự án minh họa cách xây dựng hệ thống **Microservices** trong Node.js, sử dụng:
-- 🐳 **Docker** để container hóa  
-- 🐇 **RabbitMQ** để giao tiếp giữa các service  
-- 🔐 **JWT** để xác thực người dùng  
-- 🚪 **API Gateway** để định tuyến yêu cầu  
+Dự án này là một hệ thống API RESTful hoàn chỉnh, được xây dựng nhằm mục đích **quản lý người dùng, sản phẩm và đơn hàng**.  
+Toàn bộ hệ thống được **đóng gói bằng Docker** và tích hợp **CI/CD pipeline** để tự động hóa quá trình build, test và deploy.
 
 ---
 
-## ⚙️ 1. Cài đặt RabbitMQ trên Docker
+## 🧱 CẤU TRÚC CHÍNH CỦA HỆ THỐNG
 
-Sử dụng lệnh này để khởi chạy RabbitMQ:
+- **Ngôn ngữ & Framework:** Node.js / Express (hoặc framework tương ứng)  
+- **Cơ sở dữ liệu:** MongoDB / MySQL / PostgreSQL  
+- **Container hóa:** Docker & Docker Compose  
+- **CI/CD:** GitHub Actions   
+- **API Authentication:** JWT (JSON Web Token)  
 
+---
+
+## ⚙️ CÁC CHỨC NĂNG CHÍNH ĐƯỢC TEST
+
+### 1️⃣ Đăng ký tài khoản  
+Người dùng có thể tạo tài khoản mới thông qua API `/api/auth/register`.  
+> **Ảnh minh chứng:**  
+> ![Test API Đăng ký tài khoản](public/1_image.png)
+
+---
+
+### 2️⃣ Đăng nhập và nhận token  
+Sau khi đăng nhập thành công qua `/api/auth/login`, hệ thống trả về **JWT Token** để xác thực các request tiếp theo.  
+> **Ảnh minh chứng:**  
+> ![Test API Đăng nhập](public/2_image.png)
+
+---
+
+### 3️⃣ Xem thông tin tài khoản  
+Người dùng có thể dùng **JWT token** để lấy thông tin cá nhân tại `/api/user/me`.  
+> **Ảnh minh chứng:**  
+> ![Test API Xem thông tin tài khoản](public/3_image.png)
+
+---
+
+### 4️⃣ Thêm sản phẩm mới  
+API `/api/products/add` cho phép thêm sản phẩm mới vào hệ thống.  
+> **Ảnh minh chứng:**  
+> ![Test API Thêm sản phẩm mới](public/4_image.png)
+
+---
+
+### 5️⃣ Lấy danh sách tất cả sản phẩm  
+API `/api/products/all` giúp lấy danh sách sản phẩm có trong hệ thống.  
+> **Ảnh minh chứng:**  
+> ![Test API Lấy hết sản phẩm](public/5_image.png)
+
+---
+
+### 6️⃣ Tạo đơn hàng mới  
+API `/api/orders/create` cho phép người dùng tạo đơn hàng mới.  
+> **Ảnh minh chứng:**  
+> ![Test API Thêm đơn hàng mới](public/6_image.png)
+
+---
+
+## 🐳 Triển khai bằng Docker
+
+Toàn bộ hệ thống được đóng gói trong **Docker** để đảm bảo tính đồng nhất giữa các môi trường phát triển, test và production.  
+
+> **Ảnh minh chứng:**  
+> ![Docker Deployment](public/7_imge.png)
+
+### Cách chạy dự án:
 ```bash
-docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management
-```
+# 1. Build image
+docker compose up --build
 
-> 🖥️ Giao diện quản lý: [http://localhost:15672](http://localhost:15672)  
-> 👤 Tài khoản mặc định: `guest` / `guest`
+# 2. Chạy hệ thống
+docker compose up 
 
-📸 *Ảnh minh họa:*  
-![RabbitMQ Setup](public/1.png)
-
----
-
-## 🌐 2. Cấu hình lại API Gateway
-
-Cập nhật đường dẫn định tuyến để API Gateway điều hướng đúng đến các service (User, Product, Order,...)
-
-📸 *Ảnh minh họa:*  
-![Chỉnh đường dẫn Gateway](public/2_chinh_duong_dan.png)
-
----
-
-## 🔑 3. Thêm thông tin đăng nhập & ký JWT
-
-Cập nhật phần logic đăng nhập để tạo **token JWT** giúp xác thực người dùng.
-
-📸 *Ảnh minh họa:*  
-![Thêm JWT Sign](public/3.png)
-
----
-
-## 🧩 4. Bổ sung các đoạn code phục vụ cho Case Study
-
-Thêm các chức năng hỗ trợ liên quan đến microservices, giao tiếp RabbitMQ, v.v.
-
-📸 *Ảnh minh họa:*  
-![Thêm Code Case Study](public/4_them_cac_code_phuc_vu_cho_case_study.png)
-
----
-
-## 🧪 5. Kiểm thử API với Postman
-
-### 🧍‍♂️ Đăng ký tài khoản
-- **Method:** `POST`
-- **Endpoint:** `/api/auth/register`
-
-📸  
-![Test Register API](public/5_register_post_man.png)
-
----
-
-### 🔐 Đăng nhập tài khoản
-- **Method:** `POST`
-- **Endpoint:** `/api/auth/login`
-
-📸  
-![Test Login API](public/6_login_post_man.png)
-
----
-
-### 🛒 Thêm sản phẩm
-- **Method:** `POST`
-- **Endpoint:** `/api/products`
-
-📸  
-![Test Add Product](public/7_add_product.png)
-
----
-
-### 📦 Xem danh sách sản phẩm
-- **Method:** `GET`
-- **Endpoint:** `/api/products`
-
-📸  
-![Get All Products](public/8_get_more_product.png)
-
----
-
-### 🧾 Tạo đơn hàng
-- **Method:** `POST`
-- **Endpoint:** `/api/orders`
-
-📸  
-![Create Order](public/9_create_order.png)
-
----
-
-## 🚀 6. Kết luận
-
-Hệ thống đã được thiết lập thành công:
-- RabbitMQ hoạt động để giao tiếp giữa các service  
-- JWT đảm bảo xác thực người dùng  
-- API Gateway định tuyến chính xác  
-- Tất cả API hoạt động ổn định qua Postman ✅
-
----
-
-🧑‍💻 **Tác giả:** NGUYỄN ĐỨC HUY 
-📅 **Cập nhật lần cuối:** 2025-10-09
+# 3. Kiểm tra container
+docker ps

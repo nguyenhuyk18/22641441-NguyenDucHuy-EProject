@@ -8,13 +8,10 @@ chai.use(chaiHttp);
 const { expect } = chai;
 
 describe("User Authentication", () => {
-  // let app;
+
   let authToken;
 
   before(async () => {
-    // app = new App();
-    // await app.connectDB();
-    // app.start();
 
     const authRes = await chai
       .request("http://huy_api_gateway:3003")
