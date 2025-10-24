@@ -10,35 +10,36 @@ const { expect } = chai;
 describe("User Authentication", () => {
   let app;
 
-  before(async () => {
-    app = new App();
-    await app.connectDB();
-    app.start();
+  before(() => {
+    // app = new App();
+    // await app.connectDB();
+    // app.start();
   });
 
   after(async () => {
-    await app.authController.authService.deleteTestUsers();
-    await app.disconnectDB();
-    app.stop();
+    // await app.authController.authService.deleteTestUsers();
+    // await app.disconnectDB();
+    // app.stop();
   });
 
   describe("POST /register", () => {
+    // register
     it("should register a new user", async () => {
       const res = await chai
-        .request(app.app)
-        .post("/register")
-        .send({ username: "testuser", password: "password" });
+        .request('http://huy_api_gateway:3003')
+        .post("/auth/api/v1/register")
+        .send({ username: "zuka2004", password: "123" });
 
       expect(res).to.have.status(200);
       expect(res.body).to.have.property("_id");
-      expect(res.body).to.have.property("username", "testuser");
+      expect(res.body).to.have.property("username", "zuka2004");
     });
 
     it("should return an error if the username is already taken", async () => {
       const res = await chai
-        .request(app.app)
-        .post("/register")
-        .send({ username: "testuser", password: "password" });
+        .request('http://huy_api_gateway:3003')
+        .post("/auth/api/v1/register")
+        .send({ username: "zuka2004", password: "123" });
 
       expect(res).to.have.status(400);
       expect(res.body).to.have.property("message", "Username already taken");
@@ -48,9 +49,9 @@ describe("User Authentication", () => {
   describe("POST /login", () => {
     it("should return a JWT token for a valid user", async () => {
       const res = await chai
-        .request(app.app)
-        .post("/login")
-        .send({ username: "testuser", password: "password" });
+        .request('http://huy_api_gateway:3003')
+        .post("/auth/api/v1/login")
+        .send({ username: "zuka2004", password: "123" });
 
       expect(res).to.have.status(200);
       expect(res.body).to.have.property("token");
@@ -60,7 +61,7 @@ describe("User Authentication", () => {
       const res = await chai
         .request(app.app)
         .post("/login")
-        .send({ username: "invaliduser", password: "password" });
+        .send({ username: "zuka2004000", password: "123" });
 
       expect(res).to.have.status(400);
       expect(res.body).to.have.property("message", "Invalid username or password");
@@ -70,7 +71,7 @@ describe("User Authentication", () => {
       const res = await chai
         .request(app.app)
         .post("/login")
-        .send({ username: "testuser", password: "wrongpassword" });
+        .send({ username: "zuka2004", password: "123" });
 
       expect(res).to.have.status(400);
       expect(res.body).to.have.property("message", "Invalid username or password");
