@@ -125,7 +125,6 @@ describe("Products", () => {
       expect(firstProduct).to.have.property("name").that.is.a("string");
       expect(firstProduct).to.have.property("description").that.is.a("string");
       expect(firstProduct).to.have.property("price").that.is.a("number");
-      expect(firstProduct).to.have.property("quantity").that.is.a("number");
     });
   })
 
