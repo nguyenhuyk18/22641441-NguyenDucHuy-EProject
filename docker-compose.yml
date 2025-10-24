@@ -17,8 +17,8 @@ services :
     image : rabbitmq:4-management
     container_name: huy_rabbitmq
     ports:
-      - "5672:5672"      # port cho ứng dụng backend (NodeJS, NestJS, v.v.)
-      - "15672:15672"    # port cho web UI quản lý RabbitMQ
+      - "5672:5672"      
+      - "15672:15672"    
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -28,7 +28,7 @@ services :
 
   huy_api_gateway :
     build: 
-      context: ./api-gateway   # thư mục chứa Dockerfile
+      context: ./api-gateway   
       dockerfile: Dockerfile  
     container_name : huy_api_gateway
     ports:
@@ -103,4 +103,4 @@ services :
 
 volumes:
   huy_rabbitmq_data:
-  huy_mongodb_data:    # volume cho MongoDB
+  huy_mongodb_data:    

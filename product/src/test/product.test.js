@@ -31,7 +31,7 @@ describe("Products", () => {
         name: "Product 8989",
         price: 100000,
         description: "Description of Product 8989",
-        quantity: 100
+        // quantity: 100
       });
 
     await chai
@@ -42,7 +42,7 @@ describe("Products", () => {
         name: "Product 9898",
         price: 100000,
         description: "Description of Product 9898",
-        quantity: 100
+        // quantity: 100
       });
 
     // lay cac product co san de test !!!
@@ -63,7 +63,7 @@ describe("Products", () => {
         name: "Product 1",
         description: "Description of Product 1",
         price: 10,
-        quantity: 100
+        // quantity: 100
       };
 
       // khúc này là gửi request như postman
@@ -75,7 +75,7 @@ describe("Products", () => {
           name: "Product 1",
           price: 10,
           description: "Description of Product 1",
-          quantity: 100
+          // quantity: 100
         });
 
       // khúc này là thực hiện việc kiểm tra
@@ -84,7 +84,7 @@ describe("Products", () => {
       expect(res.body).to.have.property("name", product.name);
       expect(res.body).to.have.property("description", product.description);
       expect(res.body).to.have.property("price", product.price);
-      expect(res.body).to.have.property("quantity", product.quantity);
+      expect(res.body).to.have.property("__v");
     });
 
     it("should return an error if name is missing", async () => {
@@ -142,15 +142,18 @@ describe("Products", () => {
         .send(
           {
             "ids": [
-              { "id": listProduct.body[0]._id, "quantity": 12 },
-              { "id": listProduct.body[1]._id, "quantity": 28 }
+              listProduct.body[0]._id,
+              listProduct.body[1]._id
             ]
           }
         )
 
 
-      expect(res).to.have.status(200);
-      expect(res.body).to.have.property("message", 'Đã cập nhật đơn hàng thành công !!');
+      expect(res).to.have.status(201);
+      expect(res.body).to.have.property("status", 'completed');
+      expect(res.body).to.have.property("products");
+      expect(res.body).to.have.property("orderId");
+      expect(res.body).to.have.property("totalPrice");
     });
   })
 });
