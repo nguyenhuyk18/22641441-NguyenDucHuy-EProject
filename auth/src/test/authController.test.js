@@ -59,7 +59,7 @@ describe("User Authentication", () => {
 
     it("should return an error for an invalid user", async () => {
       const res = await chai
-        .request(app.app)
+        .request('http://huy_api_gateway:3003')
         .post("/login")
         .send({ username: "zuka2004000", password: "123" });
 
@@ -69,7 +69,7 @@ describe("User Authentication", () => {
 
     it("should return an error for an incorrect password", async () => {
       const res = await chai
-        .request(app.app)
+        .request('http://huy_api_gateway:3003')
         .post("/login")
         .send({ username: "zuka2004", password: "123" });
 
